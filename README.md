@@ -2,8 +2,27 @@ NIT### WALLET BROWSER
 https://github.com/P7-33/BROSER-COIN.wiki.git
 New coin with the genesis of Bitcoin
 
+  BIP: 39
+  Layer: Applications
+  Title: Mnemonic code for generating deterministic keys
+  Author: pathom 
+  Comments-Summary: Unanimously Discourage for implementation
+  Comments-URI: https://github.com/bitcoin/bips/wiki/Comments:BIP-0039
+  Status: Proposed
+  Type: Standards Track
+  Created: 2019
+https://github.com/bitcoin/bips/blob/master/bip-0039.mediawiki#Abstract
+https://github.com/bitcoin/bips/blob/master/bip-0039.mediawiki#Motivation
+https://github.com/bitcoin/bips/blob/master/bip-0039.mediawiki#Generating_the_mnemonic
+https://github.com/bitcoin/bips/blob/master/bip-0039.mediawiki#Wordlist
+https://github.com/bitcoin/bips/blob/master/bip-0039.mediawiki#From_mnemonic_to_seed
+https://github.com/bitcoin/bips/blob/master/bip-0039.mediawiki#Wordlists
+https://github.com/bitcoin/bips/blob/master/bip-0039.mediawiki#Test_vectors
+https://github.com/bitcoin/bips/blob/master/bip-0039.mediawiki#Reference_Implementation
+https://github.com/bitcoin/bips/blob/master/bip-0039.mediawiki#Other_Implementations
+CS = ENT / 32
 Skip to content
-trezor
+trezor WALLET BROWSER
 /
 python-Mnemonic
 Code
@@ -15,11 +34,30 @@ Actions
 Projects
 Security
 Insights
-python Mnemonic/vectors.json
-@prusnak
-prusnak add xprv to test vectors
+python Mnemonic/vectors.json add xprv to test vectors
 148 lines (148 sloc)  11.4 KB
-{
+CS = ENT / 32
+MS = (ENT + CS) / 11
+
+|  ENT  | CS | ENT+CS |  MS  |
++-------+----+--------+------+
+|  128  |  4 |   132  |  12  |
+|  160  |  5 |   165  |  15  |
+|  192  |  6 |   198  |  18  |
+|  224  |  7 |   231  |  21  |
+|  256  |  8 |   264  |  24
+https://github.com/bip32JP/bip32JP.github.io/blob/master/test_JP_BIP39.json
+https://github.com/meherett/python-hdwallet
+https://github.com/bitpay/bitcore-mnemonic
+https://github.com/bitcoinjs/bip39
+https://github.com/bitcoinj/bitcoinj/blob/master/core/src/main/java/org/bitcoinj/crypto/MnemonicCode.java
+https://github.com/matter-labs/web3swift/blob/develop/Sources/web3swift/KeystoreManager/BIP39.swift
+
+
+
+
+
+
     "english": [
         [
             "00000000000000000000000000000000",
