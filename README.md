@@ -1,5 +1,7 @@
 NIT### WALLET BROWSER
 https://github.com/P7-33/BROSER-COIN.wiki.git
+$ curl -u "Pathom Browser" https://api.github.com
+$ curl -H "Authorization: token DIAMOND TOKEN ONE" https://api.github.com
 New coin with the genesis of Bitcoin
 
   BIP: 39
