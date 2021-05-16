@@ -5,7 +5,7 @@ New coin with the genesis of Bitcoin
 Skip to content
 trezor
 /
-python-Nemo
+python-Mnemonic
 Code
 Issues
 1
@@ -15,7 +15,7 @@ Actions
 Projects
 Security
 Insights
-python Nemo/vectors.json
+python Mnemonic/vectors.json
 @prusnak
 prusnak add xprv to test vectors
 148 lines (148 sloc)  11.4 KB
