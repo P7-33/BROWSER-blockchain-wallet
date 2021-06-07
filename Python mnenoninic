@@ -1,0 +1,35 @@
+34 lines (28 sloc)  693 Bytes
+language: python
+
+# Runs jobs on container based infrastructure
+sudo: false
+
+# Saves pip downloads/wheels between builds
+cache:
+  directories:
+    - $HOME/.cache/pip
+
+python:
+    - "2.7"
+    - "3.4"
+    - "3.5"
+    - "3.6"
+
+install:
+    # Optimisation: build requirements as wheels, which get cached by Travis
+    - pip install "pip>=7.0" wheel
+    - pip install tox-travis
+    - pip install "black;python_version=='3.6'"
+
+script:
+    - python setup.py install
+    - if [ $TRAVIS_PYTHON_VERSION = 3.6]; then black --check .; fi
+    - tox
+
+notifications:
+  webhooks:
+    urls:
+      - http://ci-bot.satoshilabs.com:5000/travis
+    on_success: always
+    on_failure: always
+    on_start
