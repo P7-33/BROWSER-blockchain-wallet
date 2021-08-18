@@ -28,6 +28,7 @@ https://github.com/bitcoin/bips/blob/master/bip-0039.mediawiki#Wordlists
 https://github.com/bitcoin/bips/blob/master/bip-0039.mediawiki#Test_vectors
 https://github.com/bitcoin/bips/blob/master/bip-0039.mediawiki#Reference_Implementation
 https://github.com/bitcoin/bips/blob/master/bip-0039.mediawiki#Other_Implementations
+https://github.com/kyokan/bob-wallet.wiki.git
 CS = ENT / 32
 Skip to content
 trezor WALLET BROWSER
