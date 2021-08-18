@@ -1,8 +1,8 @@
 # WALLET BROWSER #
 
 https://github.com/P7-33/BROSER-COIN.wiki.git
-$ curl -u "Pathom Browser" https://api.github.com
-$ curl -H "Authorization: token:
+" https://api.github.com
+"Authorization: token:
 
  # DIAMOND TOKEN ONE
 
