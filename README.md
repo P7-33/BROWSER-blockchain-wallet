@@ -1,7 +1,5 @@
 # WALLET BROWSER #
 
-async function checkAddress(address) 
-
 https://github.com/P7-33/BROSER-COIN.wiki.git
 $ curl -u "Pathom Browser" https://api.github.com
 $ curl -H "Authorization: token:
