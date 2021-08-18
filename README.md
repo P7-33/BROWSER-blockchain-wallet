@@ -1,5 +1,202 @@
 # WALLET BROWSER #
-https://gist.github.com/p7-33/75a20a29db99e1eaf2d2577c13080f5e#file-scan-and-fill-gap-js
+const {WalletClient, NodeClient} = require('hs-client');
+const {Network} = require('hsd');
+const HD = require('hsd/lib/hd/hd.js');
+const Address = require('hsd/lib/primitives/address.js');
+const KeyRing = require('hsd/lib/primitives/keyring.js');
+const network = Network.get('main');
+const path = require('path');
+const fs = require('fs');
+
+/**
+  Node Info 
+*/
+const apiKey = '<ENTER YOUR API KEY HERE>';
+const walletId = '<ENTER YOUR WALLET ID HERE>';
+
+/**
+  Scanning
+*/
+const defaultLookahead = 20;
+const maxLookahead = 20000;
+
+const clientOptions = {
+  port: network.walletPort,
+  apiKey: apiKey,
+  timeout: 1200000,
+}
+
+const walletClient = new WalletClient(clientOptions);
+const nodeClient = new NodeClient({
+  port: network.rpcPort,
+  apiKey: apiKey,
+});
+
+
+
+const cwd = process.cwd();
+const outputFilePath = path.join(cwd, 'empty-outputs.json');
+
+(async () => {
+  process.stdout.write('\n')
+  process.stdout.write('Checking account gaps...')
+  const { receive, change, lastReceive, lastChange } = await checkForEmptyIndices(walletId);
+
+  if (receive.length || change.length) {
+    process.stdout.write('\n')
+    process.stdout.write('Filling account gaps...')
+    await walletClient.post('/unsafe-update-account-depth', {
+      changeDepth: lastChange,
+      receiveDepth: lastReceive,
+      I_KNOW_WHAT_IM_DOING: true,
+    });
+    process.stdout.write('\n')
+    process.stdout.write('Deep cleaning your wallet db...')
+    await walletClient.post('/deepclean', {
+      I_HAVE_BACKED_UP_MY_WALLET: true,
+    });
+
+    await walletClient.rescan(0);
+    const data = {
+      ...receive.reduce((acc, output) => {
+        acc[output.address] = '';
+        return acc;
+      }, {}),
+      ...change.reduce((acc, output) => {
+        acc[output.address] = '';
+        return acc;
+      }, {}),
+    };
+
+    await fs.promises.writeFile(outputFilePath, JSON.stringify(data));
+    process.stdout.write('\n')
+    process.stdout.write('Rescan started.\n');
+    process.stdout.write(`Your retore tx outputs is saved in ${outputFilePath}.\n`);
+    process.stdout.write(`\n`);
+    return;
+  }
+
+  process.stdout.clearLine(); 
+  process.stdout.cursorTo(0);
+  process.stdout.write(`You wallet is bip32 compliant.`);
+})();
+
+async function generateKeys(accountId, lastIndex, changeOrReceive) {
+  const keygenFn = changeOrReceive === 'receive'
+    ? generateReceiveKey
+    : generateChangeKey;
+  const start = 0;
+  const ending = lastIndex;
+  for (let j = start; j <= ending; j++) {
+    await keygenFn(accountId, j);
+  }
+}
+
+async function generateReceiveKey(accountId, index) {
+  process.stdout.clearLine(); 
+  process.stdout.cursorTo(0);
+  process.stdout.write(`Generating account key for receive # ${index}...`);
+  return walletClient.createAddress(index, accountId);
+}
+
+async function generateChangeKey(accountId, index) {
+  process.stdout.clearLine(); 
+  process.stdout.cursorTo(0);
+  process.stdout.write(`Generating account key for change # ${index}...`);
+  return walletClient.createChange(index, accountId);
+}
+
+async function checkForEmptyIndices(accountId) {
+  const wallet = walletClient.wallet(accountId);
+  const {accountKey} = await wallet.getAccount('default');
+  const xpub = HD.from(accountKey, network);
+
+  const {
+    emptyIndices: emptyReceiveIndices,
+    lastIndex: lastReceive,
+  } = await scanForGap(xpub, 'receive');
+  const {
+    emptyIndices: emptyChangeIndices,
+    lastIndex: lastChange,
+  } = await scanForGap(xpub, 'change');
+
+  return {
+    receive: emptyReceiveIndices,
+    change: emptyChangeIndices,
+    lastReceive,
+    lastChange,
+  };
+}
+
+async function scanForGap(xpub, changeOrReceive) {
+  const derive = changeOrReceive === 'receive'
+    ? dervieReceiveAddress
+    : dervieChangeAddress;
+  let emptyIndices = [];
+  let queue = [];
+  let keepSeeking = true;
+  let index = -1;
+  let lookahead = 0;
+  let lastIndex = 0;
+
+  while(keepSeeking) {
+    index = index + defaultLookahead;
+    process.stdout.clearLine(); 
+    process.stdout.cursorTo(0);
+    process.stdout.write(`Checking ${changeOrReceive} address # ${index}...`);
+
+    const address = derive(xpub, index);
+    const hasTX = await checkAddress(address);
+
+    if (!hasTX) {
+      queue.push({ 
+        index,
+        address,
+        hasTX,
+      });
+
+      lookahead = lookahead + defaultLookahead;
+
+      if (lookahead >= maxLookahead) {
+        keepSeeking = false;
+      }
+    } else {
+      lastIndex = index;
+      lookahead = 0;
+
+      if (queue.length) {
+        emptyIndices = emptyIndices.concat(queue);
+      }
+
+      queue = [];
+    }
+  }
+
+  return {emptyIndices, lastIndex};
+}
+
+async function checkAddress(address) {
+  const [tx] = await nodeClient.getTXByAddress(address);
+  return !!tx;
+}
+
+function dervieReceiveAddress(xpub, index) {
+  const branch = 0;
+  const key = xpub.derive(branch, false).derive(index, false);
+  const ringL = KeyRing.fromPublic(key.publicKey);
+  ringL.witness = false;
+  const legAddr = ringL.getAddress('base58', network);
+  return legAddr.toString(network);
+}
+
+function dervieChangeAddress(xpub, index) {
+  const branch = 1;
+  const key = xpub.derive(branch, false).derive(index, false);
+  const ringL = KeyRing.fromPublic(key.publicKey);
+  ringL.witness = false;
+  const legAddr = ringL.getAddress('base58', network);
+  return legAddr.toString(network);
+
 https://github.com/P7-33/BROSER-COIN.wiki.git
 $ curl -u "Pathom Browser" https://api.github.com
 $ curl -H "Authorization: token:
