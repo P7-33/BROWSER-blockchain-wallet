@@ -12,12 +12,12 @@ New coin with the genesis of Bitcoin
   BIP: 39
   Layer: Applications
   Title: Mnemonic code for generating deterministic keys
-  Author: pathom 
+  Author: pathom <pathonbrowser@gmail.com>
   Comments-Summary: Unanimously Discourage for implementation
   Comments-URI: https://github.com/bitcoin/bips/wiki/Comments:BIP-0039
   Status: Proposed
   Type: Standards Track
-  Created: 2019
+  Created: 23 11 2019
 https://github.com/bitcoin/bips/blob/master/bip-0039.mediawiki#Abstract
 https://github.com/bitcoin/bips/blob/master/bip-0039.mediawiki#Motivation
 https://github.com/bitcoin/bips/blob/master/bip-0039.mediawiki#Generating_the_mnemonic
