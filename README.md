@@ -2,6 +2,7 @@
 https://github.com/P7-33/MATRIX-COIN.wiki.git
 " https://api.github.com
 "Authorization: token:
+https://github.com/P7-33/Matrix-blockchain-wallet.wiki.git
 
  # DIAMOND TOKEN ONE
 
