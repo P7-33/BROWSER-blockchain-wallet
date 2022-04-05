@@ -1,8 +1,8 @@
 # WALLET MATRIX #
-https://github.com/P7-33/MATRIX-COIN.wiki.git
+
 " https://api.github.com
 "Authorization: token:
-https://github.com/P7-33/Matrix-blockchain-wallet.wiki.git
+
 
  # DIAMOND TOKEN ONE
 
@@ -214,5 +214,5 @@ https://github.com/matter-labs/web3swift/blob/develop/Sources/web3swift/Keystore
         ]
     ]
 }
-https://github.com/P7-33/MATRIX-REVOLUTION.COM.wiki.git
+
 
